@@ -133,3 +133,4 @@ dmypy.json
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/Seam-Carving.iml
 /.idea/vcs.xml
+/samples/output/1_out.gif
