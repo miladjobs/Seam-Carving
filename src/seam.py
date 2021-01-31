@@ -41,28 +41,42 @@ def find_seam(energy_array: np.ndarray, vert: bool = True):
     return seam
 
 
-def mark_seam(image_array: np.ndarray, seam: list, vert: bool = True):
+def mark_seam(image_array: np.ndarray, seam: list, vert: bool = True, is_energy: bool = False):
     mark_seam_image = []
     if vert:
-        for y in range(len(image_array)):
-            x_pixels_array = [pixel for pixel in image_array[y][:seam[y][0]]]
-            x_pixels_array.append([255, 0, 0])
-            for pixel in image_array[y][seam[y][0] + 1:]:
-                x_pixels_array.append(pixel)
-            mark_seam_image.append(x_pixels_array)
+        if is_energy:
+            for y in range(len(image_array)):
+                x_pixels_array = [[int(pixel), int(pixel), int(pixel)] for pixel in image_array[y][:seam[y][0]]]
+                x_pixels_array.append([255, 0, 0])
+                for pixel in image_array[y][seam[y][0] + 1:]:
+                    x_pixels_array.append([int(pixel), int(pixel), int(pixel)])
+                mark_seam_image.append(x_pixels_array)
+        else:
+            for y in range(len(image_array)):
+                x_pixels_array = [pixel for pixel in image_array[y][:seam[y][0]]]
+                x_pixels_array.append([255, 0, 0])
+                for pixel in image_array[y][seam[y][0] + 1:]:
+                    x_pixels_array.append(pixel)
+                mark_seam_image.append(x_pixels_array)
     else:
-        mark_seam_image = [[] for _ in image_array]
-        for x in range(len(image_array[0])):
-            for j in range(len(image_array)):
-                if j == len(image_array) - 1 - seam[x][0]:
-                    mark_seam_image[j].append([255, 0, 0])
-                else:
-                    mark_seam_image[j].append(image_array[j][x])
-    x = np.array(mark_seam_image, dtype=int)
-    if vert:
-        return x
-    else:
-        return x
+        if is_energy:
+            mark_seam_image = [[] for _ in image_array]
+            for x in range(len(image_array[0])):
+                for j in range(len(image_array)):
+                    if j == len(image_array) - 1 - seam[x][0]:
+                        mark_seam_image[j].append([255, 0, 0])
+                    else:
+                        mark_seam_image[j].append(
+                            [int(image_array[j][x]), int(image_array[j][x]), int(image_array[j][x])])
+        else:
+            mark_seam_image = [[] for _ in image_array]
+            for x in range(len(image_array[0])):
+                for j in range(len(image_array)):
+                    if j == len(image_array) - 1 - seam[x][0]:
+                        mark_seam_image[j].append([255, 0, 0])
+                    else:
+                        mark_seam_image[j].append(image_array[j][x])
+    return np.array(mark_seam_image, dtype=int)
 
 
 def get_energy_array(input_array: np.ndarray):
@@ -92,8 +106,14 @@ def delete_seam(image_array: np.ndarray, seam: list, vert: bool = True):
                         new_image[j - 1].append(image_array[j][x])
                     else:
                         new_image[j].append(image_array[j][x])
-    x = np.array(new_image, dtype=int)
-    if vert:
-        return x
-    else:
-        return x
+    return np.array(new_image, dtype=int)
+
+
+def get_energy_rgb_image(energy_array: np.ndarray):
+    energy_image = []
+    for x_pixels in energy_array:
+        x_energies = []
+        for pixel in x_pixels:
+            x_energies.append([int(pixel), int(pixel), int(pixel)])
+        energy_image.append(x_energies)
+    return np.array(energy_image, dtype=int)
